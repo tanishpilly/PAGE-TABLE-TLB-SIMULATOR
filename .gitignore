@@ -1,0 +1,15 @@
+# Build output
+build/
+pagetable_tlb_sim
+pagetable_tlb_sim.exe
+
+# Object & Binary files
+*.o
+*.exe
+*.out
+
+# Editor & System files
+.vscode/
+.idea/
+*.swp
+*.DS_Store

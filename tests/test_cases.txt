@@ -1,0 +1,57 @@
+====================================================================
+               PAGE TABLE & TLB SIMULATOR TEST CASES
+====================================================================
+
+CONFIGURATION:
+- Page Size           : 4096 bytes
+- Offset Bits         : 12 bits (log2(4096))
+- Page Mask           : 4095 (0xFFF)
+- Total Virtual Pages : 16 (Pages 0 to 15)
+- Physical Frames     : 8 (Frames 0 to 7)
+- TLB Size            : 4 entries (LRU replacement)
+
+DEFAULT PAGE MAPPINGS:
+- Page 0 -> Frame 2 (Valid)
+- Page 1 -> Frame 5 (Valid)
+- Page 2 -> Unmapped (Invalid)
+- Page 3 -> Frame 1 (Valid)
+- Page 4 -> Frame 7 (Valid)
+- Page 5 -> Frame 3 (Valid)
+- Page 6 -> Unmapped (Invalid)
+- Page 7 -> Frame 4 (Valid)
+
+====================================================================
+TEST SCENARIO 1: Basic Address Translation
+====================================================================
+Input: Virtual Address = 4098
+Expected Calculations:
+- Page Number = 4098 >> 12 = 1
+- Offset      = 4098 & 4095 = 2
+- Page Table Lookup: Page 1 maps to Frame 5
+- Physical Address = (5 << 12) | 2 = 20480 + 2 = 20482 (0x5002)
+
+====================================================================
+TEST SCENARIO 2: TLB Cache Hit & Miss Verification
+====================================================================
+Sequence:
+1. Access Virtual Address 4098 (1st time)
+   - TLB Status : MISS
+   - Page Table : HIT (Frame 5)
+   - TLB Action : Insert Page 1 -> Frame 5
+2. Access Virtual Address 4098 (2nd time)
+   - TLB Status : HIT (Frame 5)
+   - Page Table : N/A (Bypassed)
+
+====================================================================
+TEST SCENARIO 3: Out-of-Bounds & Unmapped Page Fault Handling
+====================================================================
+Scenario A: Unmapped Page
+- Input Virtual Address = 8192 (Page 2)
+- Page Table Status: Invalid / Unmapped
+- Expected Output: PAGE FAULT: Unmapped Address
+
+Scenario B: Out-of-Bounds Virtual Page
+- Input Virtual Address = 65536 (Page 16)
+- Page Table Length = 16 (Valid Pages: 0-15)
+- Expected Output: PAGE FAULT: Unmapped Address
+====================================================================
